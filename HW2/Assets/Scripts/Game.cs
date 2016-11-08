@@ -5,6 +5,8 @@ using UnityEngine.UI;
 public class Game : MonoBehaviour {
 
 	public AudioSource sfxSource;
+	public AudioClip roarSound;
+	public AudioClip collectSound;
 
 	public string room;
 	public string action;
@@ -140,6 +142,8 @@ public class Game : MonoBehaviour {
 		if(room == "monster"){
 			//Maybe talk to the monster.... I don't know... Add some silly jokes here and have the player die anyways in the end
 			myText = "Roar.\n\nHello?\n\nRoar, ro roar roar.\n\n(Inner thought: Oh no...)\n\nROAR!!!\n\nThe monster got too fed up with you and decided to eat you.\n\nPress Backspace to go Back";
+			sfxSource.clip = roarSound;
+			sfxSource.Play();
 		}
 		if(room == "pit"){
 			myText = "AHHHhhhhhhhhhhhh......! \n\nPress Backspace to go Back";
@@ -208,6 +212,8 @@ public class Game : MonoBehaviour {
 					}
 					else if(Input.GetKeyDown(KeyCode.B)){
 						action = "correct_answer";
+						sfxSource.clip = collectSound;
+						sfxSource.Play();
 					}
 					else if(Input.GetKeyDown(KeyCode.C)){
 						action = "sorry";
@@ -227,7 +233,6 @@ public class Game : MonoBehaviour {
 				solved = true;
 				ring = true;
 				myText = "Congratulation, you opened the box and found a ring.\n\nPress Spacebar to Continue";
-				//playSFX();
 				if(Input.GetKeyDown(KeyCode.Space)){
 					action = "null";
 				}
