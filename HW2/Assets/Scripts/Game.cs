@@ -7,11 +7,12 @@ public class Game : MonoBehaviour {
 	public AudioSource sfxSource;
 	public AudioClip roarSound;
 	public AudioClip collectSound;
+	public AudioClip screamSound;
 
 	public string room;
 	public string action;
 	public string myText;
-	public int counter = 0;
+	private int counter = 0;
 	private bool hint = false;
 	private bool goNext = false;
 	
@@ -52,11 +53,21 @@ public class Game : MonoBehaviour {
 		//Intro
 		if(room == "intro"){
 			myText = "Welcome to the Puzzle House.\n\nOnce you have entered, you can't leave the house alive, unless you complete all the puzzles.\n\nEnjoy your time here.\n\n\nPress SpaceBar To Continue";
+			if(Input.GetKeyDown(KeyCode.Space)){
+				room = "scale_room";
+			}
 		}
 
 		//Scale Room
 		if(room == "scale_room"){
-			myText = "Scale Room\n\nYou entered the first room and see a table. On the table was a piece of paper and a scale that had gold on one side and feather on the other. A question appears before you; which is heavier?\n\nPress Up to look at the scale\nPress Down to read the paper";
+			myText = "Scale Room\n\nYou entered the first room and see a table. On the table was a piece of paper and a scale that had gold on one side and feather on the other.";
+			myText += "A question appears before you; which is heavier?\n\nPress Up to look at the scale\nPress Down to read the paper";
+			if(Input.GetKeyDown(KeyCode.UpArrow) && action != "look_at_paper"){
+				action = "look_at_scale";
+			}
+			else if(Input.GetKeyDown(KeyCode.DownArrow) && action != "look_at_scale"){
+				action = "look_at_paper";
+			}
 			if(action == "look_at_scale"){
 			myText = "You looked at the scale and saw the feathers were on the higher end and the gold were on lower end. You said gold were heavier. The floor tile underneath you disappeared and down you went, into the jaws of a large titanoboa.\n\nPress Backspace to go Back ";
 			}
@@ -70,9 +81,6 @@ public class Game : MonoBehaviour {
 		if(room == "hopeless_man"){
 			myText = "Hopeless Man's Room\n\nIn the next room, you see a man crouching in a corner. \n\nYou approach the guy and asked what is wrong? \n\nThe man replied, I don't remember how many people are in my family! I am SO ashamed of myself. I was given a hint, but I can't understand it. Could you help me? \n\nPress Up to help\nPress Down to look around";	
 			goNext = false;
-			// if(Input.GetKeyDown(KeyCode.DownArrow)){
-			// 	action = "look_box";
-			// }
 			if(action == "help_man"){
 			myText = "Hopeless Man's Room\n\nAlright, I'll help you. The man tells you the hint: My family consists of me and my wife. We have six daughters and each daughter has one brother. \nHow many people are in his family? \n\n\nPress Up for 8\nPress Down for 9\nPress Left for 12\nPress Right for 14";
 			}
@@ -128,10 +136,20 @@ public class Game : MonoBehaviour {
 				}
 			}
 			else if(action == "choose_left"){
-				myText = "Left Girl\n\nYou enter a dark room and noticed a pair of glowing eyes staring at you.";
+				myText = "Left Girl\n\nYou enter a dark room and noticed a pair of glowing eyes staring at you.\n\nPress Spacebar to Continue";
+				if(Input.GetKeyDown(KeyCode.Space)){
+					sfxSource.clip = roarSound;
+					sfxSource.Play();
+					room = "monster";
+				}
 			}
 			else if(action == "choose_middle"){
 				myText = "Middle Girl\n\nYou enter a dark room and started to walk forward.";
+				if(Input.GetKeyDown(KeyCode.Space)){
+					sfxSource.clip = screamSound;
+					sfxSource.Play();
+					room = "pit";
+				}
 			}
 			else if(action == "choose_right"){
 				myText = "Right Girl\n\nYou enter the room and the door closed behind you. It was very bright and so you couldn't keep your eyes open to see what is around you. \n\n\n Press Up to Continue";
@@ -142,8 +160,6 @@ public class Game : MonoBehaviour {
 		if(room == "monster"){
 			//Maybe talk to the monster.... I don't know... Add some silly jokes here and have the player die anyways in the end
 			myText = "Roar.\n\nHello?\n\nRoar, ro roar roar.\n\n(Inner thought: Oh no...)\n\nROAR!!!\n\nThe monster got too fed up with you and decided to eat you.\n\nPress Backspace to go Back";
-			sfxSource.clip = roarSound;
-			sfxSource.Play();
 		}
 		if(room == "pit"){
 			myText = "AHHHhhhhhhhhhhhh......! \n\nPress Backspace to go Back";
@@ -153,7 +169,7 @@ public class Game : MonoBehaviour {
 		if(room == "hallway"){
 			goNext = false;
 			myText = "You see five doors and a table in the middle of the hallway. You walk up to the table. On this table consists of: \na toy car\na copper box\n\nPress Up To Continue\nPress Down to Look at the Copper Box";
-			if(Input.GetKeyDown(KeyCode.DownArrow) && action != "solve_box"){
+			if(Input.GetKeyDown(KeyCode.DownArrow) && action != "solve_box" && counter < 1){
 				action = "look_box";
 				counter = 0;
 			}
@@ -162,11 +178,35 @@ public class Game : MonoBehaviour {
 				if(Input.GetKeyDown(KeyCode.UpArrow) && action != "solve_box"){
 					room = "door";
 				}
+				else if(Input.GetKeyDown(KeyCode.LeftArrow) && action != "solve_box"){
+					room = "talkative_girl";
+					action = "null";
+				}
+				else if(Input.GetKeyDown(KeyCode.RightArrow) && action != "solve_box"){
+					room = "tiny_boy";
+					action = "null";
+				}
+				else if(Input.GetKeyDown(KeyCode.DownArrow)){
+					counter = 2;
+					action = "null";
+				}
 			}
 			else if(counter == 2){
 				myText = "Press Left to go to Dancing Girl's Room\n\nPress Right to go to Ribbon Girl's Room\n\nPress Up to go up the Hallway\n\nPress Down to Look at Copper Box";
 				if(Input.GetKeyDown(KeyCode.DownArrow)){
 					action = "look_box";
+				}
+				else if(Input.GetKeyDown(KeyCode.LeftArrow)){
+					room = "dancing_girl";
+					action = "null";					
+				}
+				else if(Input.GetKeyDown(KeyCode.RightArrow)){
+					room = "ribbon_girl";
+					action = "null";
+				}
+				else if(Input.GetKeyDown(KeyCode.UpArrow)){
+					counter = 1;
+					action = "null";
 				}
 			}
 			if(action == "look_box"){
@@ -180,6 +220,10 @@ public class Game : MonoBehaviour {
 				}
 				else{
 					myText = "The copper box is locked. \n\nPress Spacebar to try solve the box";
+					if(Input.GetKeyDown(KeyCode.Space) && !solved){
+						counter = 0;
+						action = "solve_box";
+					}
 				}
 			}
 			if(action == "solve_box"){
@@ -255,7 +299,7 @@ public class Game : MonoBehaviour {
 				myText = "Ribbon Girl's Room\n\nI lost her ring. Did you see it?!\n\nPress Up to Give her ring\nPress Down to Reply no";
 			}
 			if(action == "give_ring_girl"){
-				myText = "Ribbon Girl's Room\n\nI stumbled upon this in the hallway, is this the ring you are looking for?\n\nIT IS!!!Here, I will give you this teddy bear in exchange for finding me the ring.\n\nPress Backspace to go Back to the Hallway";
+				myText = "Ribbon Girl's Room\n\nI stumbled upon this in the hallway, is this the ring you are looking for?\n\nIT IS!!!Here, I will give you this teddy bear in exchange for finding me the ring.\n\nObtained Teddy Bear*\n\nPress Backspace to go Back to the Hallway";
 				teddy_bear = true;
 			}
 			if(action == "reply_no"){
@@ -284,7 +328,7 @@ public class Game : MonoBehaviour {
 			//Stop tornado
 			else if(action == "stop_tornado"){
 				if(ribbon){
-					myText = "Dancing Girl's Room\n\nThank you stranger. It was hard to stop spinning once I start to spin because I don't know when to stop. Here is some blue paint in return for helping me.\n\nPress Backspace to go Back to the Hallway";
+					myText = "Dancing Girl's Room\n\nThank you stranger. It was hard to stop spinning once I start to spin because I don't know when to stop. Here is some blue paint in return for helping me.\n\nObtained Blue Paint*\n\nPress Backspace to go Back to the Hallway";
 					blue_paint = true;
 				}
 				else{
@@ -308,7 +352,7 @@ public class Game : MonoBehaviour {
 			myText = "Talkative Girl\n\nHi. It is so lonely by myself. You know, my favorite color is... blahblahblahblahblahblahblahblah.\n\nYou start to zone out and noticed a doll missing from her collection.\n\nHey! Are you listening?\n\nUh. Yeah. \n\nPress Up to Show Teddy Bear";
 			//
 			if(action == "give_teddy_bear_girl"){
-				myText = "Here is a teddy bear.\n\nMy collection is complete now.\nThank you!\n\nShe grabs a ribbon from another teddy bear and gives it to you.\n\nPress Backspace to go Back to the Hallway";
+				myText = "Here is a teddy bear.\n\nMy collection is complete now.\nThank you!\n\nShe grabs a ribbon from another teddy bear and gives it to you.\n\nObtained Ribbon*\n\nPress Backspace to go Back to the Hallway";
 				ribbon = true;
 			}
 		}
@@ -348,7 +392,7 @@ public class Game : MonoBehaviour {
 			}
 			else if(action == "give_toy_car"){
 				if(blue_paint){
-					myText = "Tiny Boy's Room\n\nWow! It's my toy car. Here! Have this watch, it doesn't fit me anyways. \n\nPress Backspace to go Back";
+					myText = "Tiny Boy's Room\n\nWow! It's my toy car. Here! Have this watch, it doesn't fit me anyways.\n\nObtained Watch*\n\nPress Backspace to go Back";
 					watch = true;
 				}
 				else{
@@ -371,16 +415,7 @@ public class Game : MonoBehaviour {
 
 		//Press Spacebar
 		if(Input.GetKeyDown(KeyCode.Space)){
-			if(room == "intro"){
-				room = "scale_room";
-			}
-			else if(action == "choose_left"){
-				room = "monster";
-			}
-			else if(action == "choose_middle"){
-				room = "pit";
-			}
-			else if(room == "tiny_boy" && action == "null"){
+			if(room == "tiny_boy" && action == "null"){
 				action = "look_around_room";
 			}
 			else if(action == "look_table"){
@@ -389,10 +424,6 @@ public class Game : MonoBehaviour {
 			else if(action == "talk_girl"){
 				action = "ask_me";
 			}
-			else if(action == "look_box" && !solved){
-		 		counter = 0;
-		 		action = "solve_box";
-		 	}
 		}
 
 		//Press Backspace to go Back
@@ -408,6 +439,7 @@ public class Game : MonoBehaviour {
 		 	}
 		 	else if(room == "pit" || room == "monster"){
 		 		room = "truth_wisdom_liar";
+		 		action = "null";
 		 	}
 		 	else if(action == "question" || action == "talk_middle" || action == "talk_right" || action == "talk_left"){
 		 		action = "talk";
@@ -446,17 +478,6 @@ public class Game : MonoBehaviour {
 		 		}
 		 		return;
 		 	}
-			
-		 	if(room == "hallway" && (action != "solve_box" || action != "look_box")){	
-		 		counter = 1;
-		 	 	left_door = "talkative_girl";
-		 	 	right_door = "tiny_boy";
-		 	 	up_door = "door";
-		 	}
-
-		 	else if(room == "scale_room"){
-		 		action = "look_at_scale";
-		 	}
 		 	
 		 	else if(action == "help_man"){
 		 		action = "man_ending_two";
@@ -471,7 +492,9 @@ public class Game : MonoBehaviour {
 		 	 	}
 		 	}
 
-		 	if(room == "truth_wisdom_liar" && action == "null"){				
+		 	if(room == "truth_wisdom_liar" && action == "null"){
+		 		sfxSource.clip = roarSound;
+		 		sfxSource.Play();				
 				action = "look_at_nametags";
 		 	}
 		 	else if(action == "talk"){
@@ -510,10 +533,7 @@ public class Game : MonoBehaviour {
 
 		//Press Down
 	 	if(Input.GetKeyDown(KeyCode.DownArrow)){
-	 		if(room == "scale_room" && action != "look_at_scale"){
-	 			action = "look_at_paper";
-	 		}
-	 		else if(room == "hopeless_man" && action == "null"){
+	 		if(room == "hopeless_man" && action == "null"){
 				action = "look_around";
 			}
 			else if(room == "truth_wisdom_liar" && action == "null"){
@@ -533,7 +553,7 @@ public class Game : MonoBehaviour {
 	 				action = "hint";
 	 			}
 	 		}
-	 		else if(action == "ask_boy"){
+	 		if(action == "ask_boy"){
 		 		action = "give_toy_car";
 		 	}
 
@@ -545,17 +565,12 @@ public class Game : MonoBehaviour {
 		 		counter = 0;
 		 		if(solved){
 		 			room = "hallway";
+		 			action = "null";
 		 		}
 		 		else{
 		 			action = "solve_box";
 		 		}
 		 	}
-
-		  	if(room == "hallway" && (action != "solve_box" || action != "look_box")){
-			 	counter = 2;
-			 	left_door = "dancing_girl";
-			 	right_door = "ribbon_girl";
-			}
 		}
 		
 		if(Input.GetKeyDown(KeyCode.LeftArrow)){
@@ -570,14 +585,6 @@ public class Game : MonoBehaviour {
 			}
 			else if(action == "question"){
 				action = "choose_left";
-			}
-			else if(counter == 1 && room == "hallway" && (action != "solve_box" || action != "look_box")){
-				room = "talkative_girl";
-				action = "null";
-			}
-			else if(counter == 2 && room == "hallway" && (action != "solve_box" || action != "look_box")){
-				room = "dancing_girl";
-				action = "null";
 			}
 			else if(action == "look_around_room"){
 				action = "look_table";
@@ -602,14 +609,6 @@ public class Game : MonoBehaviour {
 			}
 			else if(action == "question"){
 				action = "choose_right";
-			}
-			else if(counter == 1 && room == "hallway" && action != "solve_box"){
-				room = "tiny_boy";
-				action = "null";
-			}
-			else if(counter == 2 && room == "hallway" && action != "solve_box"){
-				room = "ribbon_girl";
-				action = "null";
 			}
 			else if(room == "tiny_boy" && action == "look_around_room"){
 				action = "look_chair";
