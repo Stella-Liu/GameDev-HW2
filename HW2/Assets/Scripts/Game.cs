@@ -12,7 +12,7 @@ public class Game : MonoBehaviour {
 	public string room;
 	public string action;
 	public string myText;
-	private int counter = 0;
+	public int counter = 0;
 	private bool hint = false;
 	private bool goNext = false;
 	
@@ -173,7 +173,11 @@ public class Game : MonoBehaviour {
 				action = "look_box";
 				counter = 0;
 			}
-			if(counter == 1){
+			else if(Input.GetKeyDown(KeyCode.UpArrow)&& action != "solve_box" && counter < 1){
+				room = "hallway";
+				counter = 1;
+			}
+			else if(counter == 1){
 				myText = "Press Up to go to the door\n\nPress Left to go to Talkative Girl's Room\n\nPress Right to go to Tiny Boy's Room\n\nPress Down to go down the Hallway";
 				if(Input.GetKeyDown(KeyCode.UpArrow) && action != "solve_box"){
 					room = "door";
@@ -197,16 +201,17 @@ public class Game : MonoBehaviour {
 					action = "look_box";
 				}
 				else if(Input.GetKeyDown(KeyCode.LeftArrow)){
+					action = "null";
 					room = "dancing_girl";
-					action = "null";					
+										
 				}
 				else if(Input.GetKeyDown(KeyCode.RightArrow)){
-					room = "ribbon_girl";
 					action = "null";
+					room = "ribbon_girl";
 				}
 				else if(Input.GetKeyDown(KeyCode.UpArrow)){
-					counter = 1;
 					action = "null";
+					counter = 1;
 				}
 			}
 			if(action == "look_box"){
@@ -279,6 +284,7 @@ public class Game : MonoBehaviour {
 				myText = "Congratulation, you opened the box and found a ring.\n\nPress Spacebar to Continue";
 				if(Input.GetKeyDown(KeyCode.Space)){
 					action = "null";
+					counter = 1;
 				}
 			}
 			else if(action == "sorry"){
@@ -291,9 +297,12 @@ public class Game : MonoBehaviour {
 
 
 		if(room == "ribbon_girl"){
-			myText = "Ribbon Girl's Room\n\nYou see a girl holding a teddy bear sitting on her bed. She doesn't seem happy.\n\nPress Up to Talk to her\nPress Down for Maybe later...";
+			myText = "Ribbon Girl's Room\n\nYou see a girl holding a teddy bear sitting on her bed. She doesn't seem happy.\n\nPress Up to Talk to her\nPress Backspace for Maybe later...";
 			if(action == "talk_girl"){
 				myText = "Ribbon Girl's Room\n\nWhat's wrong?\n\nIt's all my fault! It is because I lost it that made mommy mad at daddy.\n\nPress Spacebar to Continue";
+				if(Input.GetKeyDown(KeyCode.Space)){
+					action = "ask_me";
+				}
 			}
 			if(action == "ask_me"){
 				myText = "Ribbon Girl's Room\n\nI lost her ring. Did you see it?!\n\nPress Up to Give her ring\nPress Down to Reply no";
@@ -310,6 +319,9 @@ public class Game : MonoBehaviour {
 		if(room == "dancing_girl"){
 			if(!blue_paint){
 				myText = "Dancing Girl's Room\n\nYou start to open the door but as soon as you turned the knob, the door flung open violently as a burst of wind blows at you.\n\nBarely able to see, you try to \n\nPress Left to Close the door\nPress Up to Talk to the tornado\nPress Right to Try to stop the tornado\n\nPress Backspace to go Back";
+				if(Input.GetKeyDown(KeyCode.LeftArrow)){
+		 			action = "close_door";
+		 		}
 			}
 			else{
 				myText = "Dancing Gir's Room'\n\nHi again stranger. I'm sorry about eariler.\n\nPress Spacebar to Continue";
@@ -319,7 +331,7 @@ public class Game : MonoBehaviour {
 			}
 			//Close the door
 			if(action == "close_door"){
-				myText = "You push your hardest to close the door. But it simply won't budge.\n\nA mouse comes by and uses its tail to close the door. He smirks at you and run back to his home.";
+				myText = "You push your hardest to close the door. But it simply won't budge.\n\nA mouse comes by and uses its tail to close the door. He smirks at you and run back to his home. Press Backspace";
 			}
 			//Talk to tornado
 			else if(action == "talk_tornado"){
@@ -349,7 +361,7 @@ public class Game : MonoBehaviour {
 
 		if(room == "talkative_girl"){
 			//What's your story? Get teddy bear gives ribbon from teddy bear
-			myText = "Talkative Girl\n\nHi. It is so lonely by myself. You know, my favorite color is... blahblahblahblahblahblahblahblah.\n\nYou start to zone out and noticed a doll missing from her collection.\n\nHey! Are you listening?\n\nUh. Yeah. \n\nPress Up to Show Teddy Bear";
+			myText = "Talkative Girl\n\nHi. It is so lonely by myself. You know, my favorite color is... blahblahblahblahblahblahblahblah.\n\nYou start to zone out and noticed a doll missing from her collection.\n\nHey! Are you listening?\n\nUh. Yeah. \n\nPress Up to Show Teddy Bear\nPress Backspace to go Back";
 			//
 			if(action == "give_teddy_bear_girl"){
 				myText = "Here is a teddy bear.\n\nMy collection is complete now.\nThank you!\n\nShe grabs a ribbon from another teddy bear and gives it to you.\n\nObtained Ribbon*\n\nPress Backspace to go Back to the Hallway";
@@ -361,9 +373,15 @@ public class Game : MonoBehaviour {
 			//What's your story? Get blue car
 			if(!found_boy){
 				myText = "Tiny Boy's Room\n\nYou walk in the room and don't see anyone in the room.\n\nHi\n\nO-O Who's there?\n\n Um... I'm down here.\n\nPress Spacebar to look around the room";
+				if(Input.GetKeyDown(KeyCode.Space) && action == "null"){
+					action = "look_around_room";
+				}
+			}
+			else if(found_boy && !blue_paint){
+				myText = "Tiny Boy's Room\n\nHi. Did you find my blue toy car?\nPress Backspace to go Back";
 			}
 			else{
-				myText = "Tiny Boy's Room\n\nHi. Did you find my blue toy car?";
+				action = "give_toy_car";
 			}
 			//Look around room
 			if(action == "look_around_room"){
@@ -371,6 +389,10 @@ public class Game : MonoBehaviour {
 			}
 			else if(action == "look_table"){
 				myText = "Tiny Boy's Room\n\nOh! Why are you hiding under the table?\n\nI'm looking for something.\n\nPress Spacebar to Continue";
+				found_boy = true;
+				if(Input.GetKeyDown(KeyCode.Space)){
+					action = "ask_boy";
+				}
 			}
 			else if(action == "look_bed"){
 				myText = "Tiny Boy's Room\n\nYou found a family of dust bunnies under the bed.\n\nPress Backspace to go Back";
@@ -394,6 +416,9 @@ public class Game : MonoBehaviour {
 				if(blue_paint){
 					myText = "Tiny Boy's Room\n\nWow! It's my toy car. Here! Have this watch, it doesn't fit me anyways.\n\nObtained Watch*\n\nPress Backspace to go Back";
 					watch = true;
+					if(Input.GetKeyDown(KeyCode.Backspace)){
+						room = "hallway";
+					}
 				}
 				else{
 					myText = "Tiny Boy's Room\n\nHow did you know I lost toy car?\n\nShow him the toy car.\n\n...no..That's not my toy car. My toy car is blue.\n\nPress Backspace to go Back";
@@ -412,19 +437,6 @@ public class Game : MonoBehaviour {
 		}
 
 
-
-		//Press Spacebar
-		if(Input.GetKeyDown(KeyCode.Space)){
-			if(room == "tiny_boy" && action == "null"){
-				action = "look_around_room";
-			}
-			else if(action == "look_table"){
-				action = "ask_boy";
-			}
-			else if(action == "talk_girl"){
-				action = "ask_me";
-			}
-		}
 
 		//Press Backspace to go Back
 		if(Input.GetKeyDown(KeyCode.Backspace)){
@@ -591,9 +603,6 @@ public class Game : MonoBehaviour {
 			}
 			else if(action == "ask_boy" && room == "tiny_boy"){
 		 		action = "give_teddy_bear";
-		 	}
-		 	else if(room == "dancing_girl" && action == "null"){
-		 		action = "close_door";
 		 	}
 		}
 
